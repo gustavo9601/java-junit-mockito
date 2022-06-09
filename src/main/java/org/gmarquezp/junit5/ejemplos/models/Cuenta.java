@@ -12,6 +12,8 @@ public class Cuenta {
     private String numeroDeCuenta;
     private BigDecimal saldo;
 
+    private Banco banco;
+
     private boolean estaActiva;
 
     public Cuenta(String nombre, String numeroDeCuenta, BigDecimal saldo) {
@@ -60,6 +62,18 @@ public class Cuenta {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Banco getBanco() {
+        return banco;
+    }
+
+    public void setBanco(Banco banco) {
+        this.banco = banco;
+    }
+
+    public boolean isEstaActiva() {
+        return estaActiva;
     }
 
     public void depositar(BigDecimal monto) {
