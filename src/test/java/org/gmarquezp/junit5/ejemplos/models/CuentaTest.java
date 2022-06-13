@@ -1,15 +1,74 @@
 package org.gmarquezp.junit5.ejemplos.models;
 
 import org.gmarquezp.junit5.ejemplos.exceptions.DineroInsuficienteException;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+
+/*
+* Ejecutar por consola
+* - Instalar en el pom
+*
+*         <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+
+                <!--Para poder especificar que etiquetas debe ejecutar-->
+                <!--<configuration>
+                    <groups>cuenta</groups>
+                </configuration>-->
+            </plugin>
+*
+*  // Ejecuta tods los test
+*  mvn test
+*
+* */
 class CuentaTest {
+
+    @BeforeAll
+    // Se ejecuta una sola vez antes de todos los test
+    static void initMetodoTestAll() {
+        System.out.println("Iniciando primera ves test");
+    }
+
+    @AfterAll
+    // Se ejecuta una sola vez despues de todos los test
+    static void endMetodoTestAll() {
+        System.out.println("Finalizando de ultimas ves test");
+    }
+
+    @BeforeEach
+        // Se ejecuta antes de cada método de prueba
+    // TestInfo => interfaz injectada por JUnit5 que permite obtener informacion de la prueba en si
+    void initMetodoTest(TestInfo testInfo, TestReporter testReporter) {
+        System.out.println("*".repeat(10) + " Iniciando metodo test " + "*".repeat(10));
+
+        // Usando el log propio de Junit testReporter
+        testReporter.publishEntry(" ejecutando: " + testInfo.getDisplayName() + " " + testInfo.getTestMethod().orElse(null).getName()
+                + " con las etiquetas " + testInfo.getTags());
+    }
+
+    @AfterEach
+        // Se ejecuta antes de cada método de prueba
+    void endMetodoTest() {
+        System.out.println("Finalizando metodo test");
+    }
+
     // Siempre se coloca la anotacion @Test para indicar que es un metodo de prueba
     @Test
     void testObjetoCuenta() {
@@ -59,7 +118,8 @@ class CuentaTest {
 
 
     @Test
-    @DisplayName("Test para retirar dinero de una cuenta")  // Anotacion para formatear el nombre del metodo de prueba que se mostrara si falla
+    @DisplayName("Test para retirar dinero de una cuenta")
+        // Anotacion para formatear el nombre del metodo de prueba que se mostrara si falla
     void testRetirarDineroCuenta() throws DineroInsuficienteException {
         BigDecimal saldoInicial = new BigDecimal("1000.2321");
         BigDecimal valorRetirar = new BigDecimal("500.2321");
@@ -192,10 +252,144 @@ class CuentaTest {
     }
 
     @Test
-    @Disabled // Salta la prueba y no la ejecuta
+    @Disabled
+        // Salta la prueba y no la ejecuta
     void testParaSaltarUnaPrueba() {
         // fail // fuerza la prueba a fallar
         fail();
     }
 
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+        // Es un condicional que valida en funcion del SO
+    void testSoloWindows() {
+        System.out.println("Solo windows");
+    }
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testSoloMac() {
+        System.out.println("Solo Mac");
+    }
+
+    @Test
+    @EnabledOnJre({JRE.JAVA_11, JRE.JAVA_17})
+        // Se ejecuta solo dependiendo del JRE pasado por parametro
+    void soloEnUnJdk() {
+        System.out.println("Solo en un JDK");
+    }
+
+    @Test
+    // @EnabledIfSystemProperties(named = "user.name", matches = ".*gus.*")
+    // Se ejecuta solo dependiendo de las propiedades del sistema
+    // @DisabledIfSystemProperties(named = "user.name", matches = ".*gus.*")
+    // No se ejecuta solo dependiendo de las propiedades del sistema
+    @Disabled
+    void testDependiendoSystemProperties() {
+        System.out.println("Properties");
+        System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));
+    }
+
+
+    @Test
+    // Se ejecuta solo dependiendo de las propiedades del ambiente
+    @EnabledIfEnvironmentVariable(named = "USERNAME", matches = ".*gus.*")
+        // @DisabledIfEnvironmentVariable(named = "ENV", matches = "prod"); // No se ejecutara si encuentra la variable ENV y es prod
+
+    void testVariablesDeEntrono() {
+        Map<String, String> variableDeEnterno = System.getenv();
+        // variables de entorno
+        variableDeEnterno.forEach((key, value) -> System.out.println(key + ": " + value));
+    }
+
+    @Test
+    void testUsandoAsumptions() {
+        boolean esDev = "dev".equals(System.getenv("ENV"));
+        // La prueba Se ejecuta solo si es dev, en caso contrario se ignorara toda la prueba
+        // Permite realizar condiciones de forma programatica y no con anotaciones
+        assumeTrue(esDev);
+
+        System.out.println("Solo si es dev");
+    }
+
+    @Nested
+            // Permite agrupar pruebas dentro de una clase general, y dependiendo del IDE se visualizaran gerarquicamente
+    class ClaseAgrupadoraPruebas {
+
+        @Test
+        void testPrueba1() {
+            System.out.println("Prueba 1");
+            assertTrue(true);
+        }
+
+        @Test
+        void testPrueba2() {
+            System.out.println("Prueba 2");
+            assertEquals(1, 1);
+        }
+    }
+
+    @RepeatedTest(5)
+        // Se ejecutara N veces por parametro, util cuando son valores random
+        // Dentro del IDE, se visualizara cada ejecucion si paso o no
+    void repetirPrueba() {
+        System.out.println("Repetir prueba");
+        int aleatorio = new Random().nextInt(6);
+        if (aleatorio > 5) {
+            fail("la prueba fallo, el numero aleatorio es: " + aleatorio);
+        }
+    }
+
+
+    @ParameterizedTest(name = "repeticion {index}, ejectando con valor {argumentsWithNames}")
+    @Tag("prueba-parametrizada") // Permite añadir una agrupacion por tag, para poder ejecutarse solo con ese tag al tiempo la agrupacion
+    // Para ejecutarla desde el IDE, seleccionar por Tag la ejecucion y colocar el valore respectivo
+    @ValueSource(ints = {10, 20, 30, 40, 500})
+        // Permite pasar una lista de valores
+    void testConParametrosCuenta(int numero) throws DineroInsuficienteException { // Cada valor del value source sera iterado y pasado a la funcion
+        System.out.println("Prueba con parametros");
+        Cuenta cuenta = new Cuenta("Juan", "123456789", new BigDecimal("100"));
+        cuenta.retirar(new BigDecimal(numero));
+        assertNotNull(cuenta.getSaldo()); // Prueba que sea diferente de nullo
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0); // Prueba que sea mayor que cero
+    }
+
+    @ParameterizedTest()
+    @Tag("prueba-parametrizada") // Permite añadir una agrupacion por tag, para poder ejecutarse solo con ese tag al tiempo la agrupacion
+    @CsvSource({"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000.12345"})
+        // permite emular una lista importada desde csv
+    void testConParametrosCsvSource(int numero, double saldo) throws DineroInsuficienteException {
+        System.out.println("Prueba con parametros");
+        Cuenta cuenta = new Cuenta("Juan", "123456789", new BigDecimal("1000"));
+        cuenta.retirar(new BigDecimal(saldo));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest()
+    @Tag("prueba-parametrizada") // Permite añadir una agrupacion por tag, para poder ejecutarse solo con ese tag al tiempo la agrupacion
+    @CsvFileSource(resources = "/data.csv")
+        // la informacion de archivo csv se importa desde un archivo
+    void testConParametrosCsvFileSource(double saldo) throws DineroInsuficienteException {
+        System.out.println("Prueba con parametros");
+        Cuenta cuenta = new Cuenta("Juan", "123456789", new BigDecimal("1000"));
+        cuenta.retirar(new BigDecimal(saldo));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest()
+    @Tag("prueba-parametrizada") // Permite añadir una agrupacion por tag, para poder ejecutarse solo con ese tag al tiempo la agrupacion
+    @MethodSource("dataFake") // Especificamos un metodo que devuelva una lista de valores, para ejecutar por iteracion la prueba
+    void testConParametrosDesdeMetodo(Integer saldo) throws DineroInsuficienteException {
+        System.out.println("Prueba con parametros");
+        Cuenta cuenta = new Cuenta("Juan", "123456789", new BigDecimal("1000"));
+        cuenta.retirar(new BigDecimal(saldo));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    private static List<Integer> dataFake() {
+        return Arrays.asList(10, 20, 30, 40, 500);
+    }
 }
