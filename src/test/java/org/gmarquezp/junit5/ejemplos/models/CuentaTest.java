@@ -334,7 +334,7 @@ class CuentaTest {
         // Dentro del IDE, se visualizara cada ejecucion si paso o no
     void repetirPrueba() {
         System.out.println("Repetir prueba");
-        int aleatorio = new Random().nextInt(6);
+        int aleatorio = new Random().nextInt(10);
         if (aleatorio > 5) {
             fail("la prueba fallo, el numero aleatorio es: " + aleatorio);
         }
