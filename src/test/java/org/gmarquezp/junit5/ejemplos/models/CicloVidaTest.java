@@ -23,11 +23,13 @@ public class CicloVidaTest {
 
     @BeforeAll
     static void beforeAll() {
+        // Util cuando se abre algun recurso compartido sin afectar el estado de los demas
         System.out.println("Iniciando pruebas una vez al comienzo");
     }
 
     @AfterAll
     static void afterAll() {
+        // destruir recursos compartidos
         System.out.println("Finalizando pruebas una vez al final");
     }
 
