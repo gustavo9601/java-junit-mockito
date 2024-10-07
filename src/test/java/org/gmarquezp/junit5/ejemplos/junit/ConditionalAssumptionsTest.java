@@ -1,4 +1,4 @@
-package org.gmarquezp.junit5.ejemplos.models;
+package org.gmarquezp.junit5.ejemplos.junit;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

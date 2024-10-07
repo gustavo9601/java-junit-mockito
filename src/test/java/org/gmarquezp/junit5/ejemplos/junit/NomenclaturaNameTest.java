@@ -1,5 +1,6 @@
-package org.gmarquezp.junit5.ejemplos.models;
+package org.gmarquezp.junit5.ejemplos.junit;
 
+import org.gmarquezp.junit5.ejemplos.models.SmartPhone;
 import org.gmarquezp.junit5.ejemplos.services.ISmartPhoneService;
 import org.gmarquezp.junit5.ejemplos.services.SmartPhoneServiceImpl;
 import org.junit.jupiter.api.DisplayName;

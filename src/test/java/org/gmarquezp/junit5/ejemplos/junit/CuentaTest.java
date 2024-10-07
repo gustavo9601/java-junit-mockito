@@ -1,6 +1,8 @@
-package org.gmarquezp.junit5.ejemplos.models;
+package org.gmarquezp.junit5.ejemplos.junit;
 
 import org.gmarquezp.junit5.ejemplos.exceptions.DineroInsuficienteException;
+import org.gmarquezp.junit5.ejemplos.models.Banco;
+import org.gmarquezp.junit5.ejemplos.models.Cuenta;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 import org.junit.jupiter.params.ParameterizedTest;
