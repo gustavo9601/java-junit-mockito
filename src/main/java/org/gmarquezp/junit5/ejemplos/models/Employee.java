@@ -5,12 +5,15 @@ public class Employee {
     private String name;
     private Integer age;
 
+    private Double salary;
+
     public Employee(){}
 
     public Employee(Long id, String name, Integer age) {
         this.id = id;
         this.name = name;
         this.age = age;
+        this.salary = 0.0;
     }
 
     public Long getId() {
@@ -35,5 +38,13 @@ public class Employee {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
     }
 }

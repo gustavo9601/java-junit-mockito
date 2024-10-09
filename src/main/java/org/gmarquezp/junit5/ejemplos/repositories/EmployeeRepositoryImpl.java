@@ -50,6 +50,12 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         return employee;
     }
 
+    @Override
+    public List<Employee> saveAll(List<Employee> employees) {
+        employees.forEach(this::save);
+        return new ArrayList<>(employees);
+    }
+
     private Long getMaxId() {
         if (employees.isEmpty()) {
             return 0L;

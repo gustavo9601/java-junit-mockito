@@ -16,6 +16,10 @@ public interface EmployeeService {
 
     Employee save(Employee employee);
 
+    List<Employee> saveAll(List<Employee> employees);
+
+    void calculateSalary(Long id);
+
     boolean delete(Long id);
 
     void deleteAll();

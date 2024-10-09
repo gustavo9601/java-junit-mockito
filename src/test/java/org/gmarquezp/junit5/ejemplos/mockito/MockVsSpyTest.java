@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class MockVsSpyTest {
 
     /**
-     * Mock: Objeto finctisio que simula el comporamiento de sus metodos
+     * Mock: Objeto fictisio que simula el comportamiento de sus metodos
      * <p>
      * Spy: Objeto que llama a los metodos reales del objeto
      * - Ejecutarias codigo, solo usar cuando dependamos de un tercero
@@ -85,4 +85,6 @@ public class MockVsSpyTest {
         verify(this.employeeRepository, times(1)).findOne(any());
 
     }
+
+
 }

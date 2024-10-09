@@ -14,6 +14,8 @@ public interface EmployeeRepository {
 
     Employee save(Employee smartphone);
 
+    List<Employee> saveAll(List<Employee> employees);
+
     boolean delete(Long id);
 
     void deleteAll();
