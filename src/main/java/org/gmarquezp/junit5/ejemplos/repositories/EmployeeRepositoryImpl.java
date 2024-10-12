@@ -52,6 +52,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public List<Employee> saveAll(List<Employee> employees) {
+        if (employees.isEmpty()){
+            throw new RuntimeException("La lista de empleados no puede estar vacia");
+        }
         employees.forEach(this::save);
         return new ArrayList<>(employees);
     }
